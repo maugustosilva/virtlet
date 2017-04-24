@@ -87,12 +87,14 @@ function copy_dind {
     fi
     ensure_build_image
     cd "${project_dir}"
-    docker run --rm \
-           -v "virtlet_src:${remote_project_dir}" \
-           -v kubeadm-dind-kube-node-1:/dind \
-           --name ${container_name} \
-           "${build_image}" \
-           /bin/sh -c "cp -av _output/* /dind"
+    for vol in kubeadm-dind-kube-master kubeadm-dind-kube-node-1; do
+        docker run --rm \
+               -v "virtlet_src:${remote_project_dir}" \
+               -v "${vol}":/dind \
+               --name ${container_name} \
+               "${build_image}" \
+               /bin/sh -c "cp -av _output/* /dind"
+    done
 }
 
 function start_dind {
